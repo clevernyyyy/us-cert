@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import argparse
-import csv
 import sys
 import textwrap
 import os.path
@@ -158,7 +157,10 @@ def make_csv_files(tree, vuln_type, bulletin_name):
         cvss_score = vuln[3][0].text
       except IndexError:
         cvss_score = '0'
-      source_info = vuln[4][0].text
+
+      source_info_href = vuln[4][0].get("href")
+      source_info_text = vuln[4][0].text
+      source_info = '=HYPERLINK("{0}","{1}")'.format(source_info_href, source_info_text)
 
       current_vuln = [vendor, product, description, published, cvss, cvss_score, source_info]
       vulnerabilities.append(current_vuln)
@@ -176,7 +178,7 @@ def parse_arguments():
 Donwloads and parses vulnerability summaries from the US-CERT website.
 Creates CSV file(s) for further dissemination.
 
-Copyright (C) 2017 Adam Schaal [CSG International]
+Copyright (C) 2017 Adam Schaal
 MIT License'''))
 
   parser.add_argument('-a', '--all', action='store_true', help='retrieve all missing bulletin since 2010 (!)')
@@ -190,6 +192,7 @@ MIT License'''))
   parser.add_argument('-m', '--medium', action='store_true', help='show medium vulnerabilities as well')
   parser.add_argument('-t', '--tables', default='tables', help='name of directory for saving tables')
   parser.add_argument('-u', '--unassigned', action='store_true', help='show Severity Not Yet Assigned vulnerabilities as well')
+  parser.add_argument('--update', action='store_true', help='retrieve all newest bulletin since last update')
   parser.add_argument('--year', action='store', nargs='?', default=0, type=int, help='retrieve all bulletins for a given year year')
 
   return vars(parser.parse_args())

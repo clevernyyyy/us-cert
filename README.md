@@ -22,7 +22,7 @@ This script helps convert US-CERT notifications into readable CSV files.  It als
 ### Example usage
 
 ```
-python uscert.py -csl --from-date 20-09-2017
+python uscert.py -clum --from-date 20-09-2017
 ```
 
 
