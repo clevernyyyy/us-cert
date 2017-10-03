@@ -15,12 +15,13 @@ try:
   import requests
 except ImportError as exception:
   print('[-] This script needs the lxml and requests library: {0}'.format(exception), file=sys.stderr)
-  print("Install lxml with: sudo pip install lxml", file=sys.stderr)
+  if sys.platform == 'win32' or sys.platform == 'cygwin':
+    print("With windows, you will need to download lxml, see README.md documentation", file=sys.stderr)
+  else:
+    print("Install lxml with: sudo pip install lxml", file=sys.stderr)
+  
   print("Install requests with: sudo pip install requests", file=sys.stderr)
-  print("With windows, you will need to download lxml", file=sys.stderr)
-  print("With windows, you will need to download requests", file=sys.stderr)
   sys.exit(-1)
-
 
 BASE_URL = 'https://www.us-cert.gov/ncas/bulletins/'
 

@@ -21,12 +21,14 @@ This script helps convert US-CERT notifications into readable CSV files.  It als
 
 ### Example usage
 
+Getting the highs, mediums, lows and unassigned severity alerts into csv tables from September 20th, 2017 to current date.
+
 ```
 python uscert.py -clum --from-date 20-09-2017
 ```
 
 
-### Flags
+### Usage
 
 ```
 usage: uscert.py [-h] [-a] [-b BULLETIN] [-c] [-d DIRECTORY] [-f]
