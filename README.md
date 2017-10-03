@@ -31,7 +31,7 @@ python uscert.py -csl --from-date 20-09-2017
 
 ```
 usage: uscert.py [-h] [-a] [-b BULLETIN] [-c] [-d DIRECTORY] [-f]
-                 [--from-date FROM_DATE] [-l] [--latest] [-m] [-s] [-t TABLES]
+                 [--from-date FROM_DATE] [-l] [--latest] [-m] [-t TABLES] [-u]
                  [--year [YEAR]]
 
 Donwloads and parses vulnerability summaries from the US-CERT website.
@@ -54,9 +54,9 @@ optional arguments:
   -l, --low             select low vulnerabilities as well
   --latest              show latest bulletin
   -m, --medium          show medium vulnerabilities as well
-  -s, --severityNA      show Severity Not Yet Assigned vulnerabilities as well
   -t TABLES, --tables TABLES
                         name of directory for saving tables
+  -u, --unassigned      show Severity Not Yet Assigned vulnerabilities as well
   --year [YEAR]         retrieve all bulletins for a given year year
 ```
 

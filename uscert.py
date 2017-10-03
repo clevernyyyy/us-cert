@@ -109,7 +109,7 @@ def setup_options(options):
     options['selection'].append('Low')
   if options['medium']:
     options['selection'].append('Medium')
-  if options['severityNA']:
+  if options['unassigned']:
     options['selection'].append('Severity Not Yet Assigned')
   return options
 
@@ -188,8 +188,8 @@ MIT License'''))
   parser.add_argument('-l', '--low', action='store_true', help='select low vulnerabilities as well')
   parser.add_argument('--latest', action='store_true', help='show latest bulletin')
   parser.add_argument('-m', '--medium', action='store_true', help='show medium vulnerabilities as well')
-  parser.add_argument('-s', '--severityNA', action='store_true', help='show Severity Not Yet Assigned vulnerabilities as well')
   parser.add_argument('-t', '--tables', default='tables', help='name of directory for saving tables')
+  parser.add_argument('-u', '--unassigned', action='store_true', help='show Severity Not Yet Assigned vulnerabilities as well')
   parser.add_argument('--year', action='store', nargs='?', default=0, type=int, help='retrieve all bulletins for a given year year')
 
   return vars(parser.parse_args())
