@@ -5,7 +5,7 @@ This script helps convert US-CERT notifications into readable CSV files.  It als
 
 ### Dependencies
 
-`lxml`, `requests`
+`lxml`, `requests`, `pandas`
 
 ### Installation
 
@@ -37,7 +37,7 @@ usage: uscert.py [-h] [-a] [-b BULLETIN] [-c] [-d DIRECTORY] [-f]
 Donwloads and parses vulnerability summaries from the US-CERT website.
 Creates CSV file(s) for further dissemination.
 
-Copyright (C) 2017 Adam Schaal [CSG International]
+Copyright (C) 2017 Adam Schaal
 MIT License
 
 optional arguments:
