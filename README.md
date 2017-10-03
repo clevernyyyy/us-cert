@@ -20,7 +20,7 @@ I think you need to download `lxml` separately.
 
 ### Example usage
 
-```python
+```
 
 python uscert.py -csl --from-date 20-09-2017
 
