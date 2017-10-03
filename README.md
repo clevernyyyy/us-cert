@@ -14,16 +14,15 @@ This script helps convert US-CERT notifications into readable CSV files.  It als
 `pip install -r requirements.txt`
 
 ##### Windows
-I think you need to download `lxml` separately.
-
+* Download `lxml` from pypi(https://pypi.python.org/pypi/lxml/3.6.4).
+* This also worked for `lxml`:  `set STATICBUILD=true && pip install lxml`
+* `sudo pip install pandas`  (if you get an error try `sudo pip install --upgrade pip` first)
 
 
 ### Example usage
 
 ```
-
 python uscert.py -csl --from-date 20-09-2017
-
 ```
 
 
