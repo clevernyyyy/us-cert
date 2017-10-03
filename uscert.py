@@ -7,6 +7,7 @@ import textwrap
 import os.path
 import re
 import pandas as pd
+import io
 
 from datetime import date, datetime, timedelta
 
@@ -27,9 +28,9 @@ BASE_URL = 'https://www.us-cert.gov/ncas/bulletins/'
 
 
 def get_bulletin_name(date_object=date.today()):
-  #
-  # return correct filename of a bulletin for a given data, published on Mondays
-  #
+  '''
+  return correct filename of a bulletin for a given data, published on Mondays
+  '''
   while date_object.weekday():
     date_object = date_object - timedelta(days=1)
   return 'SB{0:%y}-{1:%j}'.format(date_object, date_object)
@@ -47,10 +48,10 @@ def get_bulletin_list(options):
   return bulletin_list
 
 def retrieve_bulletin(filename, bulletin_name, options):
-  #
-  # returns a bulletin as a tree or an empty object if bulletin cannot be read
-  # returns bulletin via HTTP or directory file if we have it localized already
-  #
+  '''
+  returns a bulletin as a tree or an empty object if bulletin cannot be read
+  returns bulletin via HTTP or directory file if we have it localized already
+  '''
   tree = None
   url = '{0}{1}'.format(BASE_URL, bulletin_name)
   try:
@@ -62,10 +63,10 @@ def retrieve_bulletin(filename, bulletin_name, options):
       if page.status_code == 200:
         tree = html.fromstring(page.text)
         if check_title(tree):
-          with open(filename, 'w') as html_page:
-            html_page.write(page.text.encode('utf-8'))
+          with io.open(filename, 'wb') as html_page:
+            html_page.write(page.text)
     else:
-      with open(filename, 'r') as html_page:
+      with io.open(filename, 'r') as html_page:
         tree = html.fromstring(html_page.read())
     date_object = check_title(tree)
     if date_object and (date_object > options['from_date']) or options['latest']:
@@ -76,9 +77,9 @@ def retrieve_bulletin(filename, bulletin_name, options):
     sys.exit(exception.errno)
 
 def setup_options(options):
-  #
-  # setup options for the rest of the program
-  #
+  '''
+  setup options for the rest of the program
+  '''
   if not options['directory'].endswith(os.path.sep):
     options['directory'] += os.path.sep
   if not os.path.exists(options['directory']):
@@ -114,26 +115,26 @@ def setup_options(options):
   return options
 
 def check_title(tree):
-  #
-  # check if tree contains vulnerability summary.
-  # returns a date object if successful.
-  #
-    try:
-      title = tree.xpath('//title/text()')[0].split(' | ')[0].replace('[\'', '')
-    except AttributeError:
-      title = ''
+  '''
+  check if tree contains vulnerability summary.
+  returns a date object if successful.
+  '''
+  try:
+    title = tree.xpath('//title/text()')[0].split(' | ')[0].replace('[\'', '')
+  except AttributeError:
+    title = ''
 
-    response = re.search(r'Vulnerability Summary for the Week of (\w+\s[0-9]{1,2}\,\s[0-9]{4})', title)
-    if response:
-      date_object = datetime.strptime(response.group(1), '%B %d, %Y')
-      return date_object.date()
-    else:
-      return False
+  response = re.search(r'Vulnerability Summary for the Week of (\w+\s[0-9]{1,2}\,\s[0-9]{4})', title)
+  if response:
+    date_object = datetime.strptime(response.group(1), '%B %d, %Y')
+    return date_object.date()
+  else:
+    return False
 
-def make_csv_files(tree, vuln_type, bulletin_name):
-  #
-  # takes selections and grabs html and converts to csv
-  #
+def make_csv_files(tree, vuln_type, bulletin_name, options):
+  '''
+  takes selections and grabs html and converts to csv
+  '''
   vulnerabilities = list()
   headers = ['Vendor', 'Product', 'Description', 'Published', 'CVSS', 'CVSS Score', 'Source Info']
   vendor = ''
@@ -168,13 +169,13 @@ def make_csv_files(tree, vuln_type, bulletin_name):
       vulnerabilities.append(current_vuln_encoded)
 
   df = pd.DataFrame(vulnerabilities, columns=headers)
-  filename = 'tables/{0} - {1} Vulnerabilities.csv'.format(bulletin_name, vuln_type)
+  filename = '{0}/{1} - {2} Vulnerabilities.csv'.format(options['tables'], bulletin_name, vuln_type)
   df.to_csv(filename, index=False)
 
 def parse_arguments():
-  #
-  # parse command line args, exits on invalid args
-  #
+  '''
+  parse command line args, exits on invalid args
+  '''
   parser = argparse.ArgumentParser(
     formatter_class=argparse.RawDescriptionHelpFormatter, 
     description=textwrap.dedent('''\
@@ -201,9 +202,9 @@ MIT License'''))
   return vars(parser.parse_args())
 
 def main():
-  #
-  # main loop
-  #
+  '''
+  main loop
+  '''
   options = parse_arguments()
   setup_options(options)
 
@@ -214,7 +215,7 @@ def main():
     tree = retrieve_bulletin(filename, bulletin_name, options)
     if tree is not None and options['csv']:
       for vuln_type in options['selection']:
-        make_csv_files(tree, vuln_type, bulletin_name)
+        make_csv_files(tree, vuln_type, bulletin_name, options)
 
 if __name__ == "__main__":
 	main()
