@@ -123,7 +123,7 @@ def check_title(tree):
       title = ''
 
     response = re.search(r'Vulnerability Summary for the Week of (\w+\s[0-9]{1,2}\,\s[0-9]{4})', title)
-    if response and response.groups > 1:
+    if response:
       date_object = datetime.strptime(response.group(1), '%B %d, %Y')
       return date_object.date()
     else:
@@ -163,10 +163,12 @@ def make_csv_files(tree, vuln_type, bulletin_name):
       source_info = '=HYPERLINK("{0}","{1}")'.format(source_info_href, source_info_text)
 
       current_vuln = [vendor, product, description, published, cvss, cvss_score, source_info]
-      vulnerabilities.append(current_vuln)
+      current_vuln_encoded = [x.encode('utf-8') for x in current_vuln]
+      vulnerabilities.append(current_vuln_encoded)
 
   df = pd.DataFrame(vulnerabilities, columns=headers)
-  df.to_csv('tables/{0} - {1} Vulnerabilities.csv'.format(bulletin_name, vuln_type), index=False)
+  filename = 'tables/{0} - {1} Vulnerabilities.csv'.format(bulletin_name, vuln_type)
+  df.to_csv(filename, index=False)
 
 def parse_arguments():
   #
