@@ -18,6 +18,9 @@ This script helps convert US-CERT notifications into readable CSV files.  It als
 * This also worked for `lxml`:  `set STATICBUILD=true && pip install lxml`
 * `sudo pip install pandas`  (if you get an error try `sudo pip install --upgrade pip` first)
 
+##### Python
+This tool has been built and tested with Python 2.7.  I _believe_ it should work with Python 3+, but I am not 100%.  Feel free to PR anything that resolves issues with Python 3+.
+
 
 ### Example usage
 
