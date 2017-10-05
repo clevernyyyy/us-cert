@@ -7,7 +7,6 @@ import textwrap
 import os.path
 import re
 import pandas as pd
-import io
 
 from datetime import date, datetime, timedelta
 
@@ -63,10 +62,10 @@ def retrieve_bulletin(filename, bulletin_name, options):
       if page.status_code == 200:
         tree = html.fromstring(page.text)
         if check_title(tree):
-          with io.open(filename, 'wb') as html_page:
+          with open(filename, 'wb') as html_page:
             html_page.write(page.text)
     else:
-      with io.open(filename, 'r') as html_page:
+      with open(filename, 'r') as html_page:
         tree = html.fromstring(html_page.read())
     date_object = check_title(tree)
     if date_object and (date_object > options['from_date']) or options['latest']:
