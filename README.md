@@ -34,11 +34,11 @@ python uscert.py -clum --from-date 20-09-2017
 ### Usage
 
 ```
-usage: uscert.py [-h] [-a] [-b BULLETIN] [-c] [-d DIRECTORY] [-f]
-                 [--from-date FROM_DATE] [-l] [--latest] [-m] [-t TABLES] [-u]
+usage: uscert.py [-h] [-a] [-b] [-c] [-d] [-f] [--from-date FROM_DATE] [-l]
+                 [--latest] [--link LINK] [-m] [-t] [-u] [--update]
                  [--year [YEAR]]
 
-Donwloads and parses vulnerability summaries from the US-CERT website.
+Downloads and parses vulnerability summaries from the US-CERT website.
 Creates CSV file(s) for further dissemination.
 
 Copyright (C) 2017 Adam Schaal
@@ -46,21 +46,22 @@ MIT License
 
 optional arguments:
   -h, --help            show this help message and exit
-  -a, --all             retrieve all missing bulletin since 2010 (!)
-  -b BULLETIN, --bulletin BULLETIN
-                        retrieve a specific bulletin
+  -a, --all             retrieve all missing bulletin since 2010 (lengthy!)
+  -b, --bulletin        retrieve a specific bulletin
   -c, --csv             creates csv files from html
-  -d DIRECTORY, --directory DIRECTORY
-                        name of directory for saving bulletins
+  -d, --directory       name of directory for saving bulletins -
+                        default(bulletins)
   -f, --force           force download, ignore / overwrite cached directory
   --from-date FROM_DATE
                         starting date (dd-mm-YYYY)
   -l, --low             select low vulnerabilities as well
   --latest              show latest bulletin
+  --link LINK           choose "a" for anchor tags or "h" for hyperlinks -
+                        default(h)
   -m, --medium          show medium vulnerabilities as well
-  -t TABLES, --tables TABLES
-                        name of directory for saving tables
+  -t, --tables          name of directory for saving tables - default(tables)
   -u, --unassigned      show Severity Not Yet Assigned vulnerabilities as well
+  --update              retrieve all newest bulletin since last update
   --year [YEAR]         retrieve all bulletins for a given year year
 ```
 

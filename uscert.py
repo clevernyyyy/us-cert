@@ -160,17 +160,32 @@ def make_csv_files(tree, vuln_type, bulletin_name, options):
       except IndexError:
         cvss_score = '0'
 
-      source_info_href = vuln[4][0].get("href")
-      source_info_text = vuln[4][0].text
-      source_info = '=HYPERLINK("{0}","{1}")'.format(source_info_href, source_info_text)
-
+      source_info = build_links(vuln[4], options['link'])
       current_vuln = [vendor, product, description, published, cvss, cvss_score, source_info]
-      current_vuln_encoded = [x.encode('utf-8') for x in current_vuln]
-      vulnerabilities.append(current_vuln_encoded)
+      vulnerabilities.append(current_vuln)
 
   df = pd.DataFrame(vulnerabilities, columns=headers)
   filename = '{0}/{1} - {2} Vulnerabilities.csv'.format(options['tables'], bulletin_name, vuln_type)
-  df.to_csv(filename, index=False)
+  df.to_csv(filename, index=False, encoding='utf-8')
+
+def build_links(element, link_type):
+  '''
+  build links from source & patch info column
+  '''
+  source = ''
+
+  if link_type == 'a':
+    # loop if requesting anchor tags
+    for i in range(0, len(element), 2):
+      source_info_href = element[i].get("href")
+      source_info_text = element[i].text
+      source += '<a href="{0}" target="_blank">{1}</a><br/>'.format(source_info_href, source_info_text)
+  else:
+    # cannot loop as csvs do not support multiple hyperlinks (particularly excel)
+    source_info_href = element[0].get("href")
+    source_info_text = element[0].text
+    source += '=HYPERLINK("{0}","{1}")'.format(source_info_href, source_info_text)
+  return source
 
 def parse_arguments():
   '''
@@ -179,22 +194,23 @@ def parse_arguments():
   parser = argparse.ArgumentParser(
     formatter_class=argparse.RawDescriptionHelpFormatter, 
     description=textwrap.dedent('''\
-Donwloads and parses vulnerability summaries from the US-CERT website.
-Creates CSV file(s) for further dissemination.
+    Downloads and parses vulnerability summaries from the US-CERT website.
+    Creates CSV file(s) for further dissemination.
 
-Copyright (C) 2017 Adam Schaal
-MIT License'''))
+    Copyright (C) 2017 Adam Schaal
+    MIT License'''))
 
-  parser.add_argument('-a', '--all', action='store_true', help='retrieve all missing bulletin since 2010 (!)')
-  parser.add_argument('-b', '--bulletin', action='store', type=str, help='retrieve a specific bulletin')
+  parser.add_argument('-a', '--all', action='store_true', help='retrieve all missing bulletin since 2010 (lengthy!)')
+  parser.add_argument('-b', '--bulletin', action='store_true', help='retrieve a specific bulletin')
   parser.add_argument('-c', '--csv', action='store_true', help='creates csv files from html')
-  parser.add_argument('-d', '--directory', default='bulletins', help='name of directory for saving bulletins')
+  parser.add_argument('-d', '--directory', action='store_true', default='bulletins', help='name of directory for saving bulletins - default(bulletins)')
   parser.add_argument('-f', '--force', action='store_true', help='force download, ignore / overwrite cached directory')
   parser.add_argument('--from-date', action='store', help='starting date (dd-mm-YYYY)')
   parser.add_argument('-l', '--low', action='store_true', help='select low vulnerabilities as well')
   parser.add_argument('--latest', action='store_true', help='show latest bulletin')
+  parser.add_argument('--link', action='store', help='choose "a" for anchor tags or "h" for hyperlinks - default(h)')
   parser.add_argument('-m', '--medium', action='store_true', help='show medium vulnerabilities as well')
-  parser.add_argument('-t', '--tables', default='tables', help='name of directory for saving tables')
+  parser.add_argument('-t', '--tables', action='store_true', default='tables', help='name of directory for saving tables - default(tables)')
   parser.add_argument('-u', '--unassigned', action='store_true', help='show Severity Not Yet Assigned vulnerabilities as well')
   parser.add_argument('--update', action='store_true', help='retrieve all newest bulletin since last update')
   parser.add_argument('--year', action='store', nargs='?', default=0, type=int, help='retrieve all bulletins for a given year year')
