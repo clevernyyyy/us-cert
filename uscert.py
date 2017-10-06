@@ -63,7 +63,7 @@ def retrieve_bulletin(filename, bulletin_name, options):
         tree = html.fromstring(page.text)
         if check_title(tree):
           with open(filename, 'wb') as html_page:
-            html_page.write(page.text)
+            html_page.write(page.text).encoding ('utf-8')
     else:
       with open(filename, 'r') as html_page:
         tree = html.fromstring(html_page.read())
@@ -160,6 +160,7 @@ def make_csv_files(tree, vuln_type, bulletin_name, options):
         cvss_score = '0'
 
       source_info = build_links(vuln[4], options['link'])
+      #source_info = (b' '.join(list(map(lambda x:html.tostring(x), vuln[4])))).decode("utf-8")
       current_vuln = [vendor, product, description, published, cvss, cvss_score, source_info]
       vulnerabilities.append(current_vuln)
 
@@ -202,14 +203,14 @@ def parse_arguments():
   parser.add_argument('-a', '--all', action='store_true', help='retrieve all missing bulletin since 2010 (lengthy!)')
   parser.add_argument('-b', '--bulletin', action='store_true', help='retrieve a specific bulletin')
   parser.add_argument('-c', '--csv', action='store_true', help='creates csv files from html')
-  parser.add_argument('-d', '--directory', action='store_true', default='bulletins', help='name of directory for saving bulletins - default(bulletins)')
+  parser.add_argument('-d', '--directory', action='store', default='bulletins', help='name of directory for saving bulletins - default(bulletins)')
   parser.add_argument('-f', '--force', action='store_true', help='force download, ignore / overwrite cached directory')
   parser.add_argument('--from-date', action='store', help='starting date (dd-mm-YYYY)')
   parser.add_argument('-l', '--low', action='store_true', help='select low vulnerabilities as well')
   parser.add_argument('--latest', action='store_true', help='show latest bulletin')
-  parser.add_argument('--link', action='store', help='choose "a" for anchor tags or "h" for hyperlinks - default(h)')
+  parser.add_argument('--link', action='store', help='choose "a" for anchor tags or "h" for csv hyperlinks - default(h)')
   parser.add_argument('-m', '--medium', action='store_true', help='show medium vulnerabilities as well')
-  parser.add_argument('-t', '--tables', action='store_true', default='tables', help='name of directory for saving tables - default(tables)')
+  parser.add_argument('-t', '--tables', action='store', default='tables', help='name of directory for saving tables - default(tables)')
   parser.add_argument('-u', '--unassigned', action='store_true', help='show Severity Not Yet Assigned vulnerabilities as well')
   parser.add_argument('--update', action='store_true', help='retrieve all newest bulletin since last update')
   parser.add_argument('--year', action='store', nargs='?', default=0, type=int, help='retrieve all bulletins for a given year year')
