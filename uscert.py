@@ -63,10 +63,13 @@ def retrieve_bulletin(filename, bulletin_name, options):
         tree = html.fromstring(page.text)
         if check_title(tree):
           with open(filename, 'wb') as html_page:
-            html_page.write(page.text).encoding ('utf-8')
+            html_page.write(page.text.encode('utf-8'))
     else:
       with open(filename, 'r') as html_page:
-        tree = html.fromstring(html_page.read())
+        try:
+          tree = html.fromstring(html_page.read())
+        except:
+          print ('\nError with ' + filename)
     date_object = check_title(tree)
     if date_object and (date_object > options['from_date']) or options['latest']:
       return tree
