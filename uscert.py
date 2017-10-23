@@ -9,6 +9,11 @@ import re
 import pandas as pd
 
 from datetime import date, datetime, timedelta
+try:
+    from urllib import quote_plus  # Python 2.X
+except ImportError:
+    from urllib.parse import quote_plus  # Python 3+
+
 
 try:
   from lxml import html
@@ -164,12 +169,13 @@ def make_csv_files(tree, vuln_type, bulletin_name, options):
 
       source_info = build_links(vuln[4], options['link'])
       #source_info = (b' '.join(list(map(lambda x:html.tostring(x), vuln[4])))).decode("utf-8")
+    
       current_vuln = [vendor, product, description, published, cvss, cvss_score, source_info]
       vulnerabilities.append(current_vuln)
 
   df = pd.DataFrame(vulnerabilities, columns=headers)
   filename = '{0}/{1} - {2} Vulnerabilities.csv'.format(options['tables'], bulletin_name, vuln_type)
-  df.to_csv(filename, index=False, encoding='utf-8')
+  df.to_csv(filename, index=False, encoding='utf-8-sig')
 
 def build_links(element, link_type):
   '''
@@ -180,7 +186,7 @@ def build_links(element, link_type):
   if link_type == 'a':
     # loop if requesting anchor tags
     for i in range(0, len(element), 2):
-      source_info_href = element[i].get("href")
+      source_info_href = quote_plus(element[i].get("href"))
       source_info_text = element[i].text
       source += '<a href="{0}" target="_blank">{1}</a><br/>'.format(source_info_href, source_info_text)
   else:
