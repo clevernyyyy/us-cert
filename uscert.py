@@ -187,7 +187,7 @@ def build_links(element, link_type):
   if link_type == 'a':
     # loop if requesting anchor tags
     for i in range(0, len(element), 2):
-      source_info_href = element[i].get("href")
+      source_info_href = quote_plus(element[i].get("href"))
       source_info_text = element[i].text
       source += '<a href="{0}" target="_blank">{1}</a><br/>'.format(source_info_href, source_info_text)
   else:
