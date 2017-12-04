@@ -9,6 +9,11 @@ import re
 import pandas as pd
 
 from datetime import date, datetime, timedelta
+try:
+    from urllib import quote_plus  # Python 2.X
+except ImportError:
+    from urllib.parse import quote_plus  # Python 3+
+
 
 try:
   from lxml import html
@@ -154,6 +159,7 @@ def make_csv_files(tree, vuln_type, bulletin_name, options):
           vendor, product = vuln[0][0].text.split(' -- ')
       except ValueError:
         vendor = vuln[0].text
+      product = vuln[0].text  # Feedback says the prefer the total string in the product column.  Leave as temporary for now.
       description = vuln[1].text
       published = vuln[2].text
       cvss = vuln[4][0].text
@@ -164,12 +170,13 @@ def make_csv_files(tree, vuln_type, bulletin_name, options):
 
       source_info = build_links(vuln[4], options['link'])
       #source_info = (b' '.join(list(map(lambda x:html.tostring(x), vuln[4])))).decode("utf-8")
+    
       current_vuln = [vendor, product, description, published, cvss, cvss_score, source_info]
       vulnerabilities.append(current_vuln)
 
   df = pd.DataFrame(vulnerabilities, columns=headers)
   filename = '{0}/{1} - {2} Vulnerabilities.csv'.format(options['tables'], bulletin_name, vuln_type)
-  df.to_csv(filename, index=False, encoding='utf-8')
+  df.to_csv(filename, index=False, encoding='utf-8-sig')
 
 def build_links(element, link_type):
   '''
@@ -199,6 +206,8 @@ def parse_arguments():
     description=textwrap.dedent('''\
     Downloads and parses vulnerability summaries from the US-CERT website.
     Creates CSV file(s) for further dissemination.
+
+    Example usage:  python uscert.py -clum --latest --link a
 
     Copyright (C) 2017 Adam Schaal
     MIT License'''))
